@@ -9,6 +9,20 @@ library(openNLP)
 library(tm)
 library(quanteda)
 
+#given a distro, gets the paretto of the top 10 guesses 
+getTopCumFreq <- function (distro, top) {
+        distro <- arrange(distro, desc(freq)) %>%
+                mutate(cumsum = cumsum(freq),freq_perc = 100*round(freq / sum(freq), 20),cum_freq = cumsum(freq_perc))
+        distro <- head(distro, top)
+        lw_levels <- distro$lastWord[order(distro$cum_freq)]
+        p <- ggplot(distro, aes(x = factor(lastWord, levels = lw_levels), y = cum_freq)) + 
+                geom_bar(stat = "identity", position=position_dodge()) +
+                geom_text(aes(y=cum_freq, label=round(cum_freq,2)), position= position_dodge(width=0.9), vjust=-.5, color="black") +
+                scale_y_continuous("Cumulative Frequency Percent", limits=c(0,100)) + 
+                scale_x_discrete("Next Word Guess")
+        return(p)
+}
+
 #gets the last word from an ngram
 getLastWord <- function (ngramIn) {
         places <- gregexpr(pattern ='_',ngramIn)[[1]]
@@ -89,7 +103,7 @@ getDistro <- function(line, nGramIn, triGramsIn, biGramsIn, uniGramsIn, dict, PO
         }
         matches <- rbind(matches, bimatches)
         
-        if (nrow(matches) < 10) {
+        if (nrow(matches) < 50) {
                 addUnis <- uniGramsIn
                 POSUnigram <- POSFilter(line, uniGramsIn$lastWord, POSDictionary, POStriplets) 
                 addUnis <- uniGramsIn[POSUnigram,]
