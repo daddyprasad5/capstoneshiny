@@ -22,39 +22,37 @@ jscode <- '
 ui =(pageWithSidebar(
         headerPanel("What's Next?"),
         sidebarPanel(
+                tags$head(tags$script(HTML(jscode))),
+                tagAppendAttributes(
+                        textAreaInput("textIn", NULL, ""),
+                        `data-proxy-click` = "btn"
+                ),
+                actionButton("btn", "Gimme your best guess!"),
+                div(HTML("Best Guess: ")),
+                textOutput(outputId = "best_guess"),
+                div(HTML("Top Guesses: ")),
+                textOutput(outputId = "guesses"),
+                #                 div(HTML("Last Leader: ")),
+                #                 textOutput(outputId = "last_leader"),
+                #                 div(HTML("Search State: ")),
+                #                 textOutput(outputId = "search_state"),
+                plotOutput(outputId = "top10", width = "100%", height = "300px")
+        ),
+        mainPanel(
                 h1("Start Typing!"),
-                p("After you type a few words guesses for your next word will appear elow the text box and button."),
+                p("After you type a few words, guesses for your next word will appear below the text box and button."),
                 p("Press Enter or Click the button to add the Best Guess to what you're typing."),
                 p("Below the Best Guess, you'll see the top 10 guesses for your next word, presented in a cumulative distribution."),
-                p("On a held-out test sample of ~850 trigrams, the model included the right next word in the top 10 guesses 36% of the time."),
-                p("After 2 and 3 letters of the next word are typed, it delivered an accurate best guess 47% and 53% respectively."),
+                p("On a held-out test sample of ~850 trigrams, the model included the right next word in the top 10 guesses 37% of the time."),
+                p("After typing 2 and 3 letters of the next word, it delivered an accurate best guess 47% and 53% of the time, respectively."),
                 p("The model is predicting primarily based on the last 3 words, using a back-off model with absolute discounting."), 
                 p("It includes some part-of-speech analysis as well, to remove from the answer set guesses of inaappropriate parts-of-speech.  But that inclusion actually reduces predictive power.  I'm still working on that.."),
                 p("I've played with more complicated discounting methods (Kneser-Ney, Katz), adding topic modeling and training the model on more data. No success on improving predictive power yet."),  
                 hr(),
                 p(a(href = "https://github.com/daddyprasad5/capstoneshiny", "Here's the code for this shiny app.")),
-                p(a(href = "https://github.com/daddyprasad5/capstoneshiny", "Here's the code for the model construction.")),  ##REPLACE with correct link
-                p(a(href = "https://github.com/daddyprasad5/capstoneshiny", "Here's more info on the project."))  ##REPLACE with correct link 
-                  ),
-        mainPanel(
-                p(
-                        tags$head(tags$script(HTML(jscode))),
-                        tagAppendAttributes(
-                                textAreaInput("textIn", NULL, ""),
-                                `data-proxy-click` = "btn"
-                        ),
-                        actionButton("btn", "Gimme your best guess!"),
-                        div(HTML("Best guess: "))
-                ),
-                textOutput(outputId = "best_guess"),
-                div(HTML("All guesses: ")),
-                textOutput(outputId = "guesses"),
-#                 div(HTML("Last Leader: ")),
-#                 textOutput(outputId = "last_leader"),
-#                 div(HTML("Search State: ")),
-#                 textOutput(outputId = "search_state"),
-                plotOutput(outputId = "top10", width = "400px", height = "300px")
-)))
+                p(a(href = "https://github.com/daddyprasad5/capstone_final", "Here's the code for the model construction.")),  
+                p(a(href = "http://daddyprasad5.github.io/capstone_final.html", "Here's more info on the project.")) 
+        )))
 
 server = function(input, output, session){
 
@@ -133,4 +131,4 @@ server = function(input, output, session){
 
 
 }
-runApp(list(ui = ui, server = server))
+shinyApp(ui = ui, server = server)
